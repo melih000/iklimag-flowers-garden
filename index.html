@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İklima'nın Bahçesi - 3D Çiçek İnceleme</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #090d16, #111026, #1d0b27);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            perspective: 1500px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            background: rgba(9, 13, 22, 0.7);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #fff, #c084fc, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(192, 132, 252, 0.2);
+        }
+
+        header p {
+            font-size: 0.95rem;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 220px 0 120px 0;
+        }
+
+        /* Çiçek Kartı Yapısı */
+        .flower-section {
+            position: relative;
+            width: 450px;
+            height: 550px;
+            margin: 60px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.8s ease;
+            opacity: 0;
+            transform: translateY(100px) rotateX(20deg) scale(0.85);
+            cursor: grab;
+        }
+
+        /* İKLİMA KARTI İÇİN ÖZEL PARLAMA */
+        .flower-section.special-card {
+            border: 1px solid rgba(192, 132, 252, 0.3);
+            background: linear-gradient(135deg, rgba(192, 132, 252, 0.04), rgba(168, 85, 247, 0.04));
+            box-shadow: 0 25px 50px rgba(192, 132, 252, 0.15);
+            height: 640px; /* Şiir alt alta geleceği için yüksekliği biraz artırdım kanka */
+        }
+
+        .flower-section:active {
+            cursor: grabbing;
+        }
+
+        .flower-section.visible {
+            opacity: 1;
+            transform: translateY(0) rotateX(0) scale(1);
+        }
+
+        /* Döndürülecek İç Kutu */
+        .flower-rotator {
+            width: 300px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
+            position: relative;
+        }
+
+        /* Çiçek ve İklima Görseli */
+        .flower-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.7));
+            pointer-events: none;
+            transform: translateZ(60px);
+        }
+
+        /* İklima'nın Fotoğrafı İçin Özel Çerçeve ve Blur Efekti */
+        .special-card .flower-img {
+            border-radius: 50%;
+            border: 4px solid rgba(192, 132, 252, 0.5);
+            object-fit: cover;
+            width: 240px;
+            height: 240px;
+            box-shadow: 0 0 30px rgba(192, 132, 252, 0.4);
+            transition: filter 0.6s ease;
+            filter: blur(20px);
+        }
+
+        /* Spoiler Açıldığında Blur Kalkacak */
+        .special-card.unlocked .flower-img {
+            filter: blur(0px) drop-shadow(0 20px 40px rgba(0, 0, 0, 0.7));
+        }
+
+        /* SPOILER BUTONU */
+        .spoiler-btn {
+            position: absolute;
+            z-index: 10;
+            padding: 12px 24px;
+            background: rgba(168, 85, 247, 0.3);
+            border: 2px solid rgba(192, 132, 252, 0.8);
+            border-radius: 50px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 20px rgba(192, 132, 252, 0.4);
+            transition: all 0.4s ease;
+            transform: translateZ(100px);
+        }
+
+        .spoiler-btn:hover {
+            background: rgba(168, 85, 247, 0.6);
+            box-shadow: 0 0 30px rgba(192, 132, 252, 0.8);
+            scale: 1.05;
+        }
+
+        /* Spoiler açılınca butonu gizle */
+        .special-card.unlocked .spoiler-btn {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateZ(100px) scale(0.8);
+        }
+
+        /* Başlıklar */
+        .flower-title {
+            font-size: 2.3rem;
+            font-weight: 600;
+            margin-top: 30px;
+            letter-spacing: 1px;
+            color: #f1f5f9;
+            transform: translateZ(40px);
+            text-shadow: 0 4px 12px rgba(0,0,0,0.8);
+        }
+
+        .special-title {
+            background: linear-gradient(to right, #fff, #c084fc, #e879f9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* AKROSTİŞ ŞİİR KUTUSU */
+        .romantic-note {
+            width: 85%;
+            margin-top: 15px;
+            padding: 18px;
+            background: rgba(9, 13, 22, 0.85);
+            border: 1px solid rgba(192, 132, 252, 0.25);
+            border-radius: 16px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #f1f5f9;
+            text-align: left; /* Şiir sol hizalı daha şık durur */
+            padding-left: 30px; /* Akrostiş harfleri için alan */
+            transform: translateZ(50px) translateY(20px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            opacity: 0;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        /* Baş harfleri parlatmak için stil */
+        .acrostic-letter {
+            font-weight: 800;
+            color: #c084fc;
+            font-size: 1.1rem;
+            text-shadow: 0 0 10px rgba(192, 132, 252, 0.6);
+            display: inline-block;
+            width: 15px;
+        }
+
+        /* Spoiler açılınca yazı süzülerek gelecek */
+        .special-card.unlocked .romantic-note {
+            opacity: 1;
+            transform: translateZ(50px) translateY(0);
+        }
+
+        .control-hint {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 8px;
+            transform: translateZ(30px);
+            opacity: 0.8;
+        }
+
+        .scroll-hint {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            color: #475569;
+            letter-spacing: 1px;
+            animation: float 2s infinite ease-in-out;
+            z-index: 50;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, -8px); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>İklima'nın Bahçesi</h1>
+        <p>Çiçeklere tıklayıp sürükleyerek 360 derece bağımsız inceleyebilirsiniz</p>
+    </header>
+
+    <div class="container">
+        <div class="flower-section">
+            <div class="flower-rotator">
+                <img src="resimler/gul.png" alt="Gül Resmi" class="flower-img">
+            </div>
+            <div class="flower-title">Gül</div>
+            <div class="control-hint">🔄 Döndürmek için sürükle</div>
+        </div>
+
+        <div class="flower-section">
+            <div class="flower-rotator">
+                <img src="resimler/manolya.png" alt="Manolya Resmi" class="flower-img">
+            </div>
+            <div class="flower-title">Manolya</div>
+            <div class="control-hint">🔄 Döndürmek için sürükle</div>
+        </div>
+
+        <div class="flower-section">
+            <div class="flower-rotator">
+                <img src="resimler/menekse.png" alt="Menekşe Resmi" class="flower-img">
+            </div>
+            <div class="flower-title">Menekşe</div>
+            <div class="control-hint">🔄 Döndürmek için sürükle</div>
+        </div>
+
+        <div class="flower-section">
+            <div class="flower-rotator">
+                <img src="resimler/ortanca.png" alt="Ortanca Resmi" class="flower-img">
+            </div>
+            <div class="flower-title">Ortanca</div>
+            <div class="control-hint">🔄 Döndürmek için sürükle</div>
+        </div>
+
+        <div class="flower-section special-card" id="iklimaCard">
+            <div class="flower-rotator">
+                <button class="spoiler-btn" id="spoilerBtn">Görselin Kilidini Aç 👁️</button>
+                <img src="resimler/iklima.png" alt="İklima" class="flower-img">
+            </div>
+            <div class="flower-title special-title">İklima</div>
+            <div class="romantic-note">
+                <span class="acrostic-letter">İ</span>çten bir gülüşün yeter dünyaya,<br>
+                <span class="acrostic-letter">K</span>elimeler yetmez o güzel ışığa.<br>
+                <span class="acrostic-letter">L</span>ale, manolya sönük kalır yanında,<br>
+                <span class="acrostic-letter">İ</span>yi ki varsın, neşe kattın bu bahçeye de cana da.<br>
+                <span class="acrostic-letter">M</span>utluluk parlar hep o bakan gözlerinde,<br>
+                <span class="acrostic-letter">A</span>nsızın açan en nadide çiçeksin kalplerde.
+            </div>
+            <div class="control-hint">✨ Detayları görmek ve döndürmek için sürükle</div>
+        </div>
+    </div>
+
+    <div class="scroll-hint">DİĞER ÇİÇEKLER İÇİN KAYDIRIN ⬇</div>
+
+    <script>
+        // Spoiler Açma İşlemi
+        const iklimaCard = document.getElementById('iklimaCard');
+        const spoilerBtn = document.getElementById('spoilerBtn');
+
+        spoilerBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            iklimaCard.classList.add('unlocked');
+        });
+
+        // Kaydırma animasyonu
+        const sections = document.querySelectorAll('.flower-section');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { root: null, threshold: 0.1 });
+        sections.forEach(section => observer.observe(section));
+
+        // 360 Derece Sürükleme Mekanizması
+        sections.forEach(section => {
+            const rotator = section.querySelector('.flower-rotator');
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+            let currentRotation = { x: 0, y: 0 };
+
+            function startDrag(e) {
+                if (section.classList.contains('special-card') && !section.classList.contains('unlocked')) {
+                    return;
+                }
+                isDragging = true;
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                previousMousePosition = { x: clientX, y: clientY };
+            }
+
+            function drag(e) {
+                if (!isDragging) return;
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                const deltaX = clientX - previousMousePosition.x;
+                const deltaY = clientY - previousMousePosition.y;
+
+                currentRotation.y += deltaX * 0.6;
+                currentRotation.x -= deltaY * 0.6;
+                currentRotation.x = Math.max(-50, Math.min(50, currentRotation.x));
+
+                rotator.style.transform = `rotateY(${currentRotation.y}deg) rotateX(${currentRotation.x}deg)`;
+                previousMousePosition = { x: clientX, y: clientY };
+            }
+
+            function endDrag() {
+                isDragging = false;
+            }
+
+            section.addEventListener('mousedown', startDrag);
+            window.addEventListener('mousemove', (e) => { if(isDragging) drag(e); });
+            window.addEventListener('mouseup', endDrag);
+
+            section.addEventListener('touchstart', startDrag, { passive: true });
+            window.addEventListener('touchmove', (e) => { if(isDragging) drag(e); }, { passive: true });
+            section.addEventListener('touchend', endDrag);
+        });
+    </script>
+</body>
+</html>
