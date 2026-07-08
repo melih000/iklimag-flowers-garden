@@ -84,7 +84,7 @@
             border: 1px solid rgba(192, 132, 252, 0.3);
             background: linear-gradient(135deg, rgba(192, 132, 252, 0.04), rgba(168, 85, 247, 0.04));
             box-shadow: 0 25px 50px rgba(192, 132, 252, 0.15);
-            height: 640px; /* Şiir alt alta geleceği için yüksekliği biraz artırdım kanka */
+            height: 640px;
         }
 
         .flower-section:active {
@@ -135,12 +135,12 @@
             filter: blur(0px) drop-shadow(0 20px 40px rgba(0, 0, 0, 0.7));
         }
 
-        /* SPOILER BUTONU */
+        /* GÜNCELLENEN GAZ ALICI BUTON */
         .spoiler-btn {
             position: absolute;
             z-index: 10;
-            padding: 12px 24px;
-            background: rgba(168, 85, 247, 0.3);
+            padding: 14px 28px;
+            background: rgba(168, 85, 247, 0.35);
             border: 2px solid rgba(192, 132, 252, 0.8);
             border-radius: 50px;
             color: #fff;
@@ -151,11 +151,12 @@
             box-shadow: 0 0 20px rgba(192, 132, 252, 0.4);
             transition: all 0.4s ease;
             transform: translateZ(100px);
+            white-space: nowrap; /* Yazı tek satırda kalsın */
         }
 
         .spoiler-btn:hover {
-            background: rgba(168, 85, 247, 0.6);
-            box-shadow: 0 0 30px rgba(192, 132, 252, 0.8);
+            background: rgba(168, 85, 247, 0.65);
+            box-shadow: 0 0 35px rgba(192, 132, 252, 0.9);
             scale: 1.05;
         }
 
@@ -194,8 +195,8 @@
             font-size: 0.95rem;
             line-height: 1.6;
             color: #f1f5f9;
-            text-align: left; /* Şiir sol hizalı daha şık durur */
-            padding-left: 30px; /* Akrostiş harfleri için alan */
+            text-align: left;
+            padding-left: 30px;
             transform: translateZ(50px) translateY(20px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.4);
             opacity: 0;
@@ -252,6 +253,7 @@
     </header>
 
     <div class="container">
+        <!-- GÜL -->
         <div class="flower-section">
             <div class="flower-rotator">
                 <img src="resimler/gul.png" alt="Gül Resmi" class="flower-img">
@@ -260,6 +262,7 @@
             <div class="control-hint">🔄 Döndürmek için sürükle</div>
         </div>
 
+        <!-- MANOLYA -->
         <div class="flower-section">
             <div class="flower-rotator">
                 <img src="resimler/manolya.png" alt="Manolya Resmi" class="flower-img">
@@ -268,6 +271,7 @@
             <div class="control-hint">🔄 Döndürmek için sürükle</div>
         </div>
 
+        <!-- MENEKŞE -->
         <div class="flower-section">
             <div class="flower-rotator">
                 <img src="resimler/menekse.png" alt="Menekşe Resmi" class="flower-img">
@@ -276,6 +280,7 @@
             <div class="control-hint">🔄 Döndürmek için sürükle</div>
         </div>
 
+        <!-- ORTANCA -->
         <div class="flower-section">
             <div class="flower-rotator">
                 <img src="resimler/ortanca.png" alt="Ortanca Resmi" class="flower-img">
@@ -284,9 +289,11 @@
             <div class="control-hint">🔄 Döndürmek için sürükle</div>
         </div>
 
+        <!-- 💜 İKLİMA (GÜNCEL BUTONLU KART) 💜 -->
         <div class="flower-section special-card" id="iklimaCard">
             <div class="flower-rotator">
-                <button class="spoiler-btn" id="spoilerBtn">Görselin Kilidini Aç 👁️</button>
+                <!-- İstediğin gibi buton metni efsane bir meraka dönüştü kanka -->
+                <button class="spoiler-btn" id="spoilerBtn">En Nadide Çiçeği Görmek İçin Tıkla 🌹</button>
                 <img src="resimler/iklima.png" alt="İklima" class="flower-img">
             </div>
             <div class="flower-title special-title">İklima</div>
